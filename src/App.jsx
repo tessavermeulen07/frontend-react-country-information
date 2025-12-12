@@ -47,9 +47,9 @@ function App() {
 
             {error && <p>Er is iets mis gegaan, probeer het later nog een keer</p>}
 
-            <ul className="list-container">
+            <ul className="list-item-container">
                 {worldMap.map((country) => {
-                    return (<li key={country?.name?.official} className="list-item-container">
+                    return (<li key={country?.name?.official}>
                         <img src={country?.flags?.svg} alt={country[0]?.flags?.alt} className="img-flag" />
                         <h2 className={regionName(country?.region)}>
                             {country?.name?.common}

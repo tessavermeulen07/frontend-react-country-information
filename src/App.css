@@ -13,6 +13,7 @@
     flex-direction: row;
     justify-content: center;
     align-items: center;
+    padding: 20px;
 }
 
 h1 {
@@ -22,16 +23,13 @@ h1 {
 
 
 .list-item-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-evenly;
-    flex-wrap: wrap;
-    flex-grow: 1;
-    flex-shrink: 0;
-    gap: 50px;
-    margin: 50px;
+    display: grid;
+    grid-template-columns: 300px 300px 300px;
+    grid-template-rows: 100px 100px 100px;
+    column-gap: 100px;
+    row-gap: 100px;
+    margin: 50px 200px ;
     list-style: none;
-
 }
 
 .img-flag {
