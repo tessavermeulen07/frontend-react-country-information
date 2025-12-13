@@ -3,12 +3,16 @@ import axios from "axios";
 import world_map from './assets/world_map.png';
 import {useState} from "react";
 import regionName from './helpers/regionName.js';
+import roundNumbers from "./helpers/roundNumbers.js";
+
 
 function App() {
     const [worldMap, setWorldMap] = useState([]);
     const [error, toggleError] = useState(false);
     const [loading, toggleLoading] = useState(false);
     const [countrySearch, setCountrySearch] = useState({});
+    const [query, setquery] = useState('');
+
 
     async function getCountries() {
         try {
@@ -38,7 +42,7 @@ function App() {
             toggleLoading(true);
             toggleError(false);
 
-            const resultSearchCountry = await axios.get('https://restcountries.com/v3.1/name/netherlands');
+            const resultSearchCountry = await axios.get(`https://restcountries.com/v3.1/name/${query}`);
             console.log(resultSearchCountry.data[0]);
 
             setCountrySearch(resultSearchCountry.data[0]);
@@ -50,55 +54,73 @@ function App() {
         }
     }
 
-    console.log(countrySearch)
+    console.log(countrySearch);
 
-    return (
-        <>
-            <img src={world_map} alt="World Map" className="img-worldmap"/>
+    const population = countrySearch?.population ?? 0
+    console.log('Ruwe populatie:', countrySearch?.population);
+    const roundPopulation = roundNumbers(population);
+    console.log('Resultaat functie', roundPopulation);
 
-            <h1>World Map</h1>
-
-            <form className="form-container">
-                <label htmlFor="country">
-                    <input
-                        type="text"
-                        id="country"
-                        name="country"
-                        size="50"
-                    />
-                </label>
-                <button type="button" onClick={searchCountry} disabled={loading}>Search</button>
-            </form>
-
-            { Object.keys(countrySearch).length > 0 && <article>
-                <img src={countrySearch.flags?.svg} alt={countrySearch.flags?.alt} className="img-flag"/>
-                <h2 className={regionName(countrySearch.region)}>
-                    {countrySearch.name?.common}
-                </h2>
-                <p>{`Has a population of ${countrySearch?.population} people`}</p>
-            </article>}
-
-            <div className="button-class">
-                <button type="button" onClick={getCountries} disabled={loading}>Haal landen op</button>
-            </div>
+    const numberOfBorders = countrySearch?.borders?.length ?? 0;
+    const bordersNumber = numberOfBorders === 0 ? '0' : numberOfBorders;
 
 
-            {error && <p>Er is iets mis gegaan, probeer het later nog een keer</p>}
+        return (
+            <>
+                <img src={world_map} alt="World Map" className="img-worldmap"/>
 
-            <ul className="list-item-container">
-                {worldMap.map((country) => {
-                    return (<li key={country?.name?.official}>
-                        <img src={country?.flags?.svg} alt={country[0]?.flags?.alt} className="img-flag"/>
-                        <h2 className={regionName(country?.region)}>
-                            {country?.name?.common}
+                <h1>World Map</h1>
+
+                <form className="form-container">
+                    <label htmlFor="country">
+                        <input
+                            type="text"
+                            id="country"
+                            name="country"
+                            size="50"
+                            value={query}
+                            onChange={(e) => setquery(e.target.value)}
+                        />
+                    </label>
+                    <button type="button" onClick={searchCountry} disabled={loading}>Search</button>
+                </form>
+                {/*Object {variabele met meer velden} wordt omgezet naar een array [lijst]*/}
+                {Object.keys(countrySearch).length > 0 &&
+                    <article className="article-container">
+
+                    <span className="article-container-span"><img src={countrySearch.flags.svg}
+                                                                  alt={countrySearch.flags.alt} className="img-flag"/>
+                        <h2 className={regionName(countrySearch.region)}>
+                            {countrySearch.name.common}
                         </h2>
-                        <p>{`Has a population of ${country?.population} people`}</p>
-                    </li>)
-                })}
-            </ul>
+                    </span>
+                        <hr/>
+                        <p>{countrySearch.name.common} is situated in {countrySearch.region} and the capital
+                            is {countrySearch.capital}.</p>
+                        <p>{`It has a population of ${roundPopulation} million people with ${bordersNumber} neighboring countries.`}</p>
+                    </article>}
 
-        </>
-    )
-}
+                <div className="button-class">
+                    <button type="button" onClick={getCountries} disabled={loading}>Haal landen op</button>
+                </div>
 
-export default App
+
+                {error && <p>Er is iets mis gegaan, probeer het later nog een keer</p>}
+
+                <ul className="list-item-container">
+                    {worldMap.map((country) => {
+                        return (<li key={country?.name?.official}>
+                            <img src={country?.flags?.svg} alt={country?.flags?.alt} className="img-flag"/>
+                            <h2 className={regionName(country?.region)}>
+                                {country?.name?.common}
+                            </h2>
+                            <p>{`Has a population of ${country?.population}  people`}</p>
+                        </li>)
+                    })}
+                </ul>
+
+            </>
+        )
+    }
+
+    export default App
