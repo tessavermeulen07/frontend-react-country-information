@@ -1,7 +1,5 @@
 function roundNumbers(population) {
-    const roundMillions = Math.round(population / 1000000);
-
-    return roundMillions;
+    return Math.round(population / 1000000);
 }
 
 export default roundNumbers;

@@ -11,7 +11,8 @@ function App() {
     const [error, toggleError] = useState(false);
     const [loading, toggleLoading] = useState(false);
     const [countrySearch, setCountrySearch] = useState({});
-    const [query, setquery] = useState('');
+    const [query, setQuery] = useState('');
+    const [wrongName, setWrongName] = useState('')
 
 
     async function getCountries() {
@@ -30,7 +31,7 @@ function App() {
             setWorldMap(result.data);
 
         } catch (error) {
-            console.error(error);
+            // console.error(error);
             toggleError(true);
         } finally {
             toggleLoading(false);
@@ -41,52 +42,60 @@ function App() {
         try {
             toggleLoading(true);
             toggleError(false);
-
+            setWrongName('')
             const resultSearchCountry = await axios.get(`https://restcountries.com/v3.1/name/${query}`);
-            console.log(resultSearchCountry.data[0]);
-
+            // console.log(resultSearchCountry.data[0]);
             setCountrySearch(resultSearchCountry.data[0]);
         } catch (error) {
-            console.error(error);
+            // console.error(error);
             toggleError(true);
+            setWrongName(query);
         } finally {
             toggleLoading(false);
         }
     }
 
-    console.log(countrySearch);
+    // console.log(countrySearch);
 
     const population = countrySearch?.population ?? 0
-    console.log('Ruwe populatie:', countrySearch?.population);
+    // console.log('Ruwe populatie:', countrySearch?.population);
     const roundPopulation = roundNumbers(population);
-    console.log('Resultaat functie', roundPopulation);
-
+    // console.log('Resultaat functie', roundPopulation);
     const numberOfBorders = countrySearch?.borders?.length ?? 0;
     const bordersNumber = numberOfBorders === 0 ? '0' : numberOfBorders;
 
+    const handleSearch = (event) => {
+        event.preventDefault();
+        searchCountry();
+        setQuery('');
+    }
 
-        return (
-            <>
-                <img src={world_map} alt="World Map" className="img-worldmap"/>
+    return (
+        <>
+            <img src={world_map} alt="World Map" className="img-worldmap"/>
 
-                <h1>World Map</h1>
+            <h1>World Map</h1>
 
-                <form className="form-container">
-                    <label htmlFor="country">
-                        <input
-                            type="text"
-                            id="country"
-                            name="country"
-                            size="50"
-                            value={query}
-                            onChange={(e) => setquery(e.target.value)}
-                        />
-                    </label>
-                    <button type="button" onClick={searchCountry} disabled={loading}>Search</button>
-                </form>
-                {/*Object {variabele met meer velden} wordt omgezet naar een array [lijst]*/}
-                {Object.keys(countrySearch).length > 0 &&
-                    <article className="article-container">
+            <form className="form-container" onSubmit={handleSearch}
+            >
+                <label htmlFor="country">
+                    <input className="input-style"
+                           type="text"
+                           id="country"
+                           name="country"
+                           size="50"
+                           value={query}
+                           onChange={(e) => setQuery(e.target.value)}
+                    />
+                </label>
+                <button type="submit" disabled={loading} className="button-search-style">Search</button>
+            </form>
+
+            <span className="error-span">{error && <p>{wrongName} bestaat niet. Probeer het opnieuw.</p>}</span>
+
+            {/*Object {variabele met meer velden} wordt omgezet naar een array [lijst]*/}
+            {Object.keys(countrySearch).length > 0 &&
+                <article className="article-container">
 
                     <span className="article-container-span"><img src={countrySearch.flags.svg}
                                                                   alt={countrySearch.flags.alt} className="img-flag"/>
@@ -94,33 +103,31 @@ function App() {
                             {countrySearch.name.common}
                         </h2>
                     </span>
-                        <hr/>
-                        <p>{countrySearch.name.common} is situated in {countrySearch.region} and the capital
-                            is {countrySearch.capital}.</p>
-                        <p>{`It has a population of ${roundPopulation} million people with ${bordersNumber} neighboring countries.`}</p>
-                    </article>}
+                    <hr/>
+                    <p>{countrySearch.name.common} is situated in {countrySearch.region} and the capital
+                        is {countrySearch.capital}.</p>
+                    <p>{`It has a population of ${roundPopulation} million people with ${bordersNumber} neighboring countries.`}</p>
+                </article>}
 
-                <div className="button-class">
-                    <button type="button" onClick={getCountries} disabled={loading}>Haal landen op</button>
-                </div>
+            <div className="button-class">
+                <button type="button" onClick={getCountries} disabled={loading}>Haal landen op</button>
+            </div>
 
 
-                {error && <p>Er is iets mis gegaan, probeer het later nog een keer</p>}
+            <ul className="list-item-container">
+                {worldMap.map((country) => {
+                    return (<li key={country?.name?.official}>
+                        <img src={country?.flags?.svg} alt={country?.flags?.alt} className="img-flag"/>
+                        <h2 className={regionName(country?.region)}>
+                            {country?.name?.common}
+                        </h2>
+                        <p>{`Has a population of ${country?.population}  people`}</p>
+                    </li>)
+                })}
+            </ul>
 
-                <ul className="list-item-container">
-                    {worldMap.map((country) => {
-                        return (<li key={country?.name?.official}>
-                            <img src={country?.flags?.svg} alt={country?.flags?.alt} className="img-flag"/>
-                            <h2 className={regionName(country?.region)}>
-                                {country?.name?.common}
-                            </h2>
-                            <p>{`Has a population of ${country?.population}  people`}</p>
-                        </li>)
-                    })}
-                </ul>
+        </>
+    )
+}
 
-            </>
-        )
-    }
-
-    export default App
+export default App
