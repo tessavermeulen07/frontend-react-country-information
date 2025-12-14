@@ -110,7 +110,7 @@ function App() {
                 </article>}
 
             <div className="button-class">
-                <button type="button" onClick={getCountries} disabled={loading}>Haal landen op</button>
+                <button type="button" onClick={getCountries} disabled={loading} className="button-get-countries">Get countries</button>
             </div>
 
 

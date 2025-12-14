@@ -19,6 +19,19 @@
     padding: 20px;
 }
 
+.button-get-countries {
+    background-color: darkslateblue;
+    color: #F2F2F2;
+    font-size: 20px;
+    font-family: inherit;
+    border-radius: 30px 30px;
+    width: 200px;
+    height: 60px;
+    outline: none;
+    border: solid 2px #1C2B32;
+    padding: 0;
+}
+
 h1 {
     text-align: center;
 }
